@@ -1,0 +1,9 @@
+# apt install python2
+# apt install python-tk
+# virtualenv -p python2 venv2
+# source venv2/bin/activate
+# pip2 install -r requirements.txt
+pymdptoolbox
+networkx
+matplotlib
+seaborn
