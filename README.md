@@ -1,4 +1,4 @@
-# hotmuchisthefork_artefacts
+# howmuchisthefork_artefacts
 
 Artefacts for the Paper "How much is the fork? Fast Probability and Profitability Calculation during Temporary Forks" 
 
