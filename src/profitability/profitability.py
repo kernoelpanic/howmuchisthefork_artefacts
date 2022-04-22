@@ -223,6 +223,144 @@ def EV_fork_blocks(p_B=0,
                    ) * ( epsilon + 1 )
                 ) + ( n_fork * P * ( epsilon + 1 ) ) + ( n_main * ( 1 - P ) )
             )
+#extract to .py file
+def EV_compare_blocks():  
+    p_E = 0
+    p_A = None
+    p_V = 0
+    p_I = 0
+    epsilon = 0
+    p_m = [ p_i for p_i in np.arange(0.0,0.56,0.01) ]
+    
+    fig, ax = plt.subplots(figsize=(16, 9))
+    # https://matplotlib.org/api/markers_api.html
+    line = itertools.cycle(('.','-', '--', '-.'))
+    marker = itertools.cycle((',','v', 'o', 's','.', '+', '*','1','D','x','^'))
+    
+    # profit main chain without any attack 
+    profit_main = [ EV_main_blocks(p_B=0,
+                                   p_E=p_E,
+                                   p_A=p_A,
+                                   p_V=p_V,
+                                   p_I=p_I,
+                                   p_m=p_i,
+                                   z=0,
+                                   n_main=0) for p_i in p_m ] 
+    plt.plot(p_m, 
+             profit_main, 
+             marker=",", 
+             linestyle='--',
+             linewidth=4, 
+             #label="Profit main no attack $p_\\mathcal{B}=0$ $\\eta_{main}=0$ $\\overleftarrow{k}=0$")
+             label="Profit main chain, no attack $p_\\mathcal{B}=0$, $\\eta_{main}=0$, $\\eta_{attack}=0$, $z=0$")
+             
+    # profit main chain while beeing attacked 
+    profit_main = [ EV_main_blocks(p_B=0.25,
+                                   p_E=p_E,
+                                   p_A=p_A,
+                                   p_V=p_V,
+                                   p_I=p_I,
+                                   p_m=p_i,
+                                   z=1,
+                                   n_main=0) for p_i in p_m ] 
+    plt.plot(p_m, 
+             profit_main, 
+             marker=",", 
+             linestyle='--',
+             linewidth=4, 
+             label="Profit main chain while attacked $p_\\mathcal{B}=0.25$, $\\eta_{main}=0$, $\\eta_{attack}=0$, $z=1$")
+    
+    # profit main chain while beeing attacked when m has already contribued a block to main 
+    profit_main = [ EV_main_blocks(p_B=0.25,
+                                   p_E=p_E,
+                                   p_A=p_A,
+                                   p_V=p_V,
+                                   p_I=p_I,
+                                   p_m=p_i,
+                                   z=1,
+                                   n_main=1,
+                                   n_fork=1) for p_i in p_m ] 
+    plt.plot(p_m, 
+             profit_main, 
+             marker=",", 
+             linestyle='--',
+             linewidth=4, 
+             label="Profit main chain while attacked $p_\\mathcal{B}=0.25$, $\\eta_{main}=1$, $\\eta_{attack}=1$, $z=1$")
+    
+    # profit attack chain if m is the only attacker
+    profit_attack = [ EV_fork_blocks(p_B=0,
+                                     p_E=p_E,
+                                     p_A=p_A,
+                                     p_V=p_V,
+                                     p_I=p_I,
+                                     p_m=p_i,
+                                     z=1,
+                                     epsilon=epsilon,
+                                     n_fork=0) for p_i in p_m ]
+    plt.plot(p_m, 
+             profit_attack, 
+             marker=next(marker), 
+             linestyle='-',
+             linewidth=4, 
+             label="Profit attack chain (no other attacker) $p_\\mathcal{B}=0$, $\\eta_{main}=0$, $\\eta_{attack}=0$, $z=1$")
+    
+    # profit attack chain if there is another attacker
+    profit_attack = [ EV_fork_blocks(p_B=0.25,
+                                     p_E=p_E,
+                                     p_A=p_A,
+                                     p_V=p_V,
+                                     p_I=p_I,
+                                     p_m=p_i,
+                                     z=1,
+                                     epsilon=epsilon,
+                                     n_fork=0) for p_i in p_m ]
+    plt.plot(p_m, 
+             profit_attack, 
+             marker=next(marker), 
+             linestyle='-',
+             linewidth=4, 
+             label="Profit attack chain $p_\\mathcal{B}=0.25$, $\\eta_{main}=0$, $\\eta_{attack}=0$, $z=1$ ")
+    
+ 
+    # profit attack chain if there is another attacker and already a contributed block to attack
+    profit_attack = [ EV_fork_blocks(p_B=0.25,
+                                     p_E=p_E,
+                                     p_A=p_A,
+                                     p_V=p_V,
+                                     p_I=p_I,
+                                     p_m=p_i,
+                                     z=1,
+                                     epsilon=epsilon,
+                                     n_fork=1,
+                                     n_main=1) for p_i in p_m ]
+    plt.plot(p_m, 
+             profit_attack, 
+             marker=next(marker), 
+             linestyle='-',
+             linewidth=4, 
+             label="Profit attack chain $p_\\mathcal{B}=0.25$, $\\eta_{main}=1$, $\\eta_{attack}=1$, $z=1$ ")
+    
+    # tidy up the figure
+    ax.grid(True)
+    ax.legend(loc='center right', 
+              bbox_to_anchor=(0.89, 1.22))
+    #ax.set_title("Profitability")
+    ax.set_xlabel("Hash rate of individual miner $ p_m $")
+    ax.set_ylabel("Expected profit for next block (normlaized to 1)")
+    
+    ax.set_ylim([0.0, 1.8])
+    ax.set_xlim([0,0.55]) 
+    plt.yticks(np.arange(0.0, 1.8, step=0.1))
+    plt.xticks(np.arange(0.0, 0.55, step=0.05))
+    
+    #plt.yscale('log')
+    plt.rcParams.update({'font.size': 20})
+    plt.rc('xtick', labelsize=20) 
+    plt.rc('ytick', labelsize=20) 
+    plt.savefig("../paper/preprint/figures/rCompare.png",
+                bbox_inches='tight',
+                dpi=200) 
+    plt.show()
 #extract to .py file later
 def EV_fork_blocks_effort(p_B=0,
                           p_E=0,
