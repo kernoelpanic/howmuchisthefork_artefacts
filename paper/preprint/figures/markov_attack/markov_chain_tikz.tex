@@ -1,0 +1,48 @@
+\tikzset{
+defaultnode/.style={
+  circle,
+  inner sep=0pt,
+  text width=10mm,
+  align=center,
+  draw=black,
+  fill=white
+  }
+}
+
+\noindent
+\begin{tikzpicture}
+\node[state, initial above, defaultnode] (s-1) {$S_{-1}$};
+%\node[state, defaultnode] (s-1) {$S_{-1}$};
+\node[state, left = 5mm of s-1, defaultnode] (s-2) {$...$};
+%\node[state, left = 5mm of s-2, defaultnode] (s-3) {$...$};
+  \node[state, accepting, left = 5mm of s-2, defaultnode] (s-a) {$S_{-{\overleftarrow{k}}}$};
+%\node[state, initial above, right = 5mm of s-1, defaultnode] (s0) {$S_0$};
+\node[state, right = 5mm of s-1, defaultnode] (s0) {$S_0$};
+\node[state, right = 5mm of s0, defaultnode] (s1) {$S_1$};
+\node[state, right = 10mm of s1, defaultnode] (s2) {$...$};
+  \node[state, accepting, right = 10mm of s2, defaultnode] (sb) {$S_{{\overrightarrow{k}}}$};
+%\draw   (s0) edge[loop above] node{0} (s0)
+\path[->] 
+  (s0) edge[bend left, below] node[align=center]{$p_\mathcal{V}$+\\$p_\mathcal{A}$+$p_\mathcal{I}$} (s-1)
+(s-1) edge[bend left, below] node[align=center]{$p_\mathcal{V}$+\\$p_\mathcal{A}$+$p_\mathcal{I}$} (s-2)
+(s-2) edge[bend left, below] node[align=center]{$p_\mathcal{V}$+\\$p_\mathcal{A}$+$p_\mathcal{I}$} (s-a)
+%(s-3) edge[bend left, below] node{$p_\mathcal{A} + p_\mathcal{V}$} (s-a)
+  (s-a) edge[loop above] node{$1$ (give up)} (s-a)
+(s-1) edge[bend left, above] node{$p_\mathcal{B} + p_\mathcal{E}$} (s0)
+(s-2) edge[bend left, above] node{$p_\mathcal{B} + p_\mathcal{E}$} (s-1)
+%(s-3) edge[bend left, above] node{$p_\mathcal{B} + p_\mathcal{E}$} (s-2)
+(s0) edge[bend left, above] node{$p_\mathcal{B} + p_\mathcal{E}$} (s1)
+(s1) edge[bend left, above] node[align=center]{$p_\mathcal{B}$+$p_\mathcal{E}$+ \\ $p_\mathcal{A}$+$p_\mathcal{I}$} (s2)
+(s2) edge[bend left, above] node[align=center]{$p_\mathcal{B}$+$p_\mathcal{E}$+ \\ $p_\mathcal{A}$+$p_\mathcal{I}$} (sb)
+  (sb) edge[loop below] node{$1$ (clear win)} (sb)
+(s2) edge[bend left, below] node{$p_\mathcal{V}$} (s1)
+ % (s1) edge[bend left, below] node[align=center,shift={(2.3mm,0)}]{$p_\mathcal{V}$+\\$p_\mathcal{A}$+$p_\mathcal{I}$} (s0);
+  (s1) edge[bend left, below] node[align=center,shift={(2.3mm,0)}]{$p_\mathcal{V}$} (s0);
+% Draw middle line
+\node (bs0) at ([shift={(5mm,-10mm)}]s0.south) {lose~~~~~~~};
+%\draw [shorten >=0pt,dashed] (s0.south) --node[pos=.7,fill=white,inner sep=1pt]{$$} (bs0);
+\draw [shorten >=0pt,dashed] (s0.east) --node[align=center]{} (bs0);
+\node (as0) at ([shift={(5mm,10mm)}]s0.north) {~~~~~~win};
+\draw [shorten >=0pt,dashed] (s0.east) --node[align=center]{} (as0);
+\end{tikzpicture}
+
